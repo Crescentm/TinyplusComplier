@@ -18,7 +18,7 @@ typedef enum {
   S_DONE
 } StateType;
 
-/* lexeme of identifier or reserved word ±êÊ¶·û»ò±£Áô×ÖµÄ´ÊËØ */
+/* lexeme of identifier or reserved word æ ‡è¯†ç¬¦æˆ–ä¿ç•™å­—çš„è¯ç´  */
 char tokenString[MAXTOKENLEN + 1];
 
 /* BUFLEN = length of the input buffer for
@@ -33,21 +33,21 @@ static int EOF_flag = true;  /* corrects ungetNextChar behavior on EOF */
 /* getNextChar fetches the next non-blank character
   from lineBuf, reading in a new line if lineBuf is
   exhausted
-  ¸Ãº¯Êı½«Ò»¸ö256-×Ö·û»º³åÇøÄÚ²¿µÄlineBufÖĞµÄ×Ö·ûÈ¡µ½É¨Ãè³ÌĞòÖĞ
-  Èç¹ûºÄ¾¡¸Ã»º³åÇø£¬ÇÒ¼ÙÉèÃ¿Ò»´Î¶¼»ñÈ¡ÁËÒ»¸öĞÂµÄÔ´´úÂëĞĞ£¨ÒÔ¼°Ôö¼ÓµÄlineno£©£¬ÄÇÃ´¾Í¿ÉÒÔÀûÓÃfgets´Ósourse¸üĞÂ»º³åÇø
+  è¯¥å‡½æ•°å°†ä¸€ä¸ª256-å­—ç¬¦ç¼“å†²åŒºå†…éƒ¨çš„lineBufä¸­çš„å­—ç¬¦å–åˆ°æ‰«æç¨‹åºä¸­
+  å¦‚æœè€—å°½è¯¥ç¼“å†²åŒºï¼Œä¸”å‡è®¾æ¯ä¸€æ¬¡éƒ½è·å–äº†ä¸€ä¸ªæ–°çš„æºä»£ç è¡Œï¼ˆä»¥åŠå¢åŠ çš„linenoï¼‰ï¼Œé‚£ä¹ˆå°±å¯ä»¥åˆ©ç”¨fgetsä»sourseæ›´æ–°ç¼“å†²åŒº
 */
 static int getNextChar(void) {
   if (!(linepos < bufsize)) {
     lineno++;
     if (fgets(lineBuf, BUFLEN - 1,
-              source)) // fets´ÓÖ¸¶¨Á÷source¶ÁÈ¡Ò»ĞĞ²¢´æÈëlineBufÖ¸ÏòµÄ×Ö·û´®ÄÚ
+              source)) // fetsä»æŒ‡å®šæµsourceè¯»å–ä¸€è¡Œå¹¶å­˜å…¥lineBufæŒ‡å‘çš„å­—ç¬¦ä¸²å†…
     {
       if (EchoSource)
         fprintf(listing, "%4d: %s", lineno, lineBuf);
       bufsize = strlen(lineBuf);
       linepos = 0;
       return lineBuf[linepos++];
-    } else //²»ÄÜ¶ÁÈ¡£¬ËµÃ÷µÚÒ»±éÉ¨Ãè½áÊø
+    } else //ä¸èƒ½è¯»å–ï¼Œè¯´æ˜ç¬¬ä¸€éæ‰«æç»“æŸ
     {
       EOF_flag = true;
       return EOF;
@@ -56,7 +56,7 @@ static int getNextChar(void) {
     return lineBuf[linepos++];
 }
 
-/* ungetNextChar backtracks one character »ØËİÒ»¸ö×Ö·û
+/* ungetNextChar backtracks one character å›æº¯ä¸€ä¸ªå­—ç¬¦
    in lineBuf */
 static void ungetNextChar(void) {
   if (!EOF_flag)
@@ -74,9 +74,9 @@ static struct {
     /*{"random", C_RANDOM},*/
 };
 
-/* lookup an identifier to see if it is a reserved word ¼ì²é±êÊ¶·ûÊÇ·ñÎª±£Áô×Ö
+/* lookup an identifier to see if it is a reserved word æ£€æŸ¥æ ‡è¯†ç¬¦æ˜¯å¦ä¸ºä¿ç•™å­—
  * uses linear search
- * ±íreservedWordsºÍ¸Ãº¯ÊıÍê³ÉÓÉgetTokenµÄÖ÷ÒªÑ­»·Ê¶±ğµÄ±êÊ¶·ûÖªºõµÄ±£Áô×ÖµÄ²éÕÒ
+ * è¡¨reservedWordså’Œè¯¥å‡½æ•°å®Œæˆç”±getTokençš„ä¸»è¦å¾ªç¯è¯†åˆ«çš„æ ‡è¯†ç¬¦çŸ¥ä¹çš„ä¿ç•™å­—çš„æŸ¥æ‰¾
  */
 static TokenType reservedLookup(char *s) {
   int i;
@@ -91,26 +91,26 @@ static TokenType reservedLookup(char *s) {
 /****************************************/
 /* function getToken returns the
  * next token in source file
- * ÏûºÄÊäÈë×Ö·û²¢¸ù¾İDFA·µ»ØÏÂÒ»¸ö±»Ê¶±ğµÄ¼ÇºÅ
+ * æ¶ˆè€—è¾“å…¥å­—ç¬¦å¹¶æ ¹æ®DFAè¿”å›ä¸‹ä¸€ä¸ªè¢«è¯†åˆ«çš„è®°å·
  */
 TokenType getToken(
-    void) { /* index for storing into tokenString ÓÃÓÚ´æ´¢µ½tokenstringµÄË÷Òı*/
+    void) { /* index for storing into tokenString ç”¨äºå­˜å‚¨åˆ°tokenstringçš„ç´¢å¼•*/
   int tokenStringIndex = 0;
   /* holds current token to be returned */
   TokenType currentToken;
   /* current state - always begins at START */
   StateType state = S_START;
-  /* flag to indicate save to tokenString Ö¸Ê¾ÊÇ·ñ±£´æµ½tokenStringµÄ±êÖ¾*/
+  /* flag to indicate save to tokenString æŒ‡ç¤ºæ˜¯å¦ä¿å­˜åˆ°tokenStringçš„æ ‡å¿—*/
   int save;
-  while (state != S_DONE) //¸ù¾İDFAÉ¨Ãè
+  while (state != S_DONE) //æ ¹æ®DFAæ‰«æ
   {
-    int c = getNextChar(); //É¨Ãè³ÌĞòµÄ×Ö·ûÊäÈë
+    int c = getNextChar(); //æ‰«æç¨‹åºçš„å­—ç¬¦è¾“å…¥
     save = true;
     switch (state) {
     case S_START:
-      if (isdigit(c)) //Èç¹ûÎª°¢À­²®Êı×Ö£¬·µ»Ø·Ç0
+      if (isdigit(c)) //å¦‚æœä¸ºé˜¿æ‹‰ä¼¯æ•°å­—ï¼Œè¿”å›é0
         state = S_INNUM;
-      else if (isalpha(c)) //Èç¹ûÎª×ÖÄ¸£¬·µ»Ø·Ç0
+      else if (isalpha(c)) //å¦‚æœä¸ºå­—æ¯ï¼Œè¿”å›é0
         state = S_INID;
       else if (c == '=')
         state = S_INASSIGN;
@@ -125,7 +125,7 @@ TokenType getToken(
         state = S_NEQ;
       else if (c == '/')
         state = S_IEXF;
-      else //µ¥Ä¿±êÊ¶·û»òÊ××Ö·ûÎ¨Ò»µÄ±êÊ¶·û
+      else //å•ç›®æ ‡è¯†ç¬¦æˆ–é¦–å­—ç¬¦å”¯ä¸€çš„æ ‡è¯†ç¬¦
       {
         state = S_DONE;
         switch (c) {
@@ -211,10 +211,10 @@ TokenType getToken(
       state = S_DONE;
       if (c == '=')
         currentToken = C_EQ;
-      else {             /* backup in the input ÔÚÊäÈëÖĞ±¸·İ*/
-        ungetNextChar(); // tinyÖĞÊıºÍ±êÊ¶·ûµÄÊ¶±ğÒªÇó´ÓINNUMºÍINIDµ½×îÖÕ×´Ì¬µÄ×ª»»¶¼Ó¦¸ÃÊÇ·ÇÏûºÄµÄ
+      else {             /* backup in the input åœ¨è¾“å…¥ä¸­å¤‡ä»½*/
+        ungetNextChar(); // tinyä¸­æ•°å’Œæ ‡è¯†ç¬¦çš„è¯†åˆ«è¦æ±‚ä»INNUMå’ŒINIDåˆ°æœ€ç»ˆçŠ¶æ€çš„è½¬æ¢éƒ½åº”è¯¥æ˜¯éæ¶ˆè€—çš„
         save =
-            false; //¿ÉÌá¹©ungetNextChar¹ı³Ì£¬ÔÚÊäÈë»º³åÇøÖĞ»ØËİÒ»¸ö×Ö·ûÀ´Íê³ÉÈÎÎñ
+            false; //å¯æä¾›ungetNextCharè¿‡ç¨‹ï¼Œåœ¨è¾“å…¥ç¼“å†²åŒºä¸­å›æº¯ä¸€ä¸ªå­—ç¬¦æ¥å®Œæˆä»»åŠ¡
       }
       break;
 
@@ -273,16 +273,16 @@ TokenType getToken(
     }
 
     if ((save) && (tokenStringIndex <=
-                   MAXTOKENLEN)) //Èç¹û¿ÉÌîÈëÇÒ³¤¶È·ûºÅÒªÇó£¬ÔòÌîÈëtokenStirngÖĞ
+                   MAXTOKENLEN)) //å¦‚æœå¯å¡«å…¥ä¸”é•¿åº¦ç¬¦å·è¦æ±‚ï¼Œåˆ™å¡«å…¥tokenStirngä¸­
       tokenString[tokenStringIndex++] = (char)c;
-    if (state == S_DONE) //Èç¹ûµ½´ïDONE²Ù×÷£¬Ôò´æ´¢
+    if (state == S_DONE) //å¦‚æœåˆ°è¾¾DONEæ“ä½œï¼Œåˆ™å­˜å‚¨
     {
       tokenString[tokenStringIndex] = '\0';
-      if (currentToken == C_ID) //¼ì²é±£Áô×Ö
+      if (currentToken == C_ID) //æ£€æŸ¥ä¿ç•™å­—
         currentToken = reservedLookup(tokenString);
     }
   }
-  if (TraceScan) //µ±token¾ù±»Ê¶±ğ£¬¿ÉÒÔ½«ĞÅÏ¢´òÓ¡
+  if (TraceScan) //å½“tokenå‡è¢«è¯†åˆ«ï¼Œå¯ä»¥å°†ä¿¡æ¯æ‰“å°
   {
     fprintf(listing, "\t%d: ", lineno);
     printToken(currentToken, tokenString);
