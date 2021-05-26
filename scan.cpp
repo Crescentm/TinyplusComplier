@@ -30,36 +30,28 @@ static int linepos = 0;      /* current position in LineBuf */
 static int bufsize = 0;      /* current size of buffer string */
 static int EOF_flag = true;  /* corrects ungetNextChar behavior on EOF */
 
-/* getNextChar fetches the next non-blank character
-  from lineBuf, reading in a new line if lineBuf is
-      exhausted 该函数将一个256 -
-          字符缓冲区内部的lineBuf中的字符取到扫描程序中
-                  如果耗尽该缓冲区，且假设每一次都获取了一个新的源代码行（以及增加的lineno），那么就可以利用fgets从sourse更新缓冲区
-                      * /
-              static int getNextChar(void) {
-        if (!(linepos < bufsize)) {
-          lineno++;
-          if (fgets(
-                  lineBuf, BUFLEN - 1,
-                  source)) //
-  fets从指定流source读取一行并存入lineBuf指向的字符串内
-          {
-            if (EchoSource)
-              fprintf(listing, "%4d: %s", lineno, lineBuf);
-            bufsize = strlen(lineBuf);
-            linepos = 0;
-            return lineBuf[linepos++];
-          } else //不能读取，说明第一遍扫描结束
-          {
-            EOF_flag = true;
-            return EOF;
-          }
-        } else
-          return lineBuf[linepos++];
-      }
+//该函数将一个256字符缓冲区内部的lineBuf中的字符取到扫描程序中
+//如果耗尽该缓冲区，且假设每一次都获取了一个新的源代码行（以及增加的lineno），那么就可以利用fgets从sourse更新缓冲区
+static int getNextChar(void) {
+  if (!(linepos < bufsize)) {
+    lineno++;
+    if (fgets(lineBuf, BUFLEN - 1, source)) {
+      // fets从指定流source读取一行并存入lineBuf指向的字符串内
+      if (EchoSource)
+        fprintf(listing, "%4d: %s", lineno, lineBuf);
+      bufsize = strlen(lineBuf);
+      linepos = 0;
+      return lineBuf[linepos++];
+    } else //不能读取，说明第一遍扫描结束
+    {
+      EOF_flag = true;
+      return EOF;
+    }
+  } else
+    return lineBuf[linepos++];
+}
 
-    // ungetNextChar backtracks one character 回溯一个字符
-       in lineBuf */
+// ungetNextChar backtracks one character 回溯一个字符
 static void ungetNextChar(void) {
   if (!EOF_flag)
     linepos--;
