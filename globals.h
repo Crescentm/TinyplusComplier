@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* MAXRESERVED = the number of reserved words ±£Áô×Ö×î´óÖµ*/
+/* MAXRESERVED = the number of reserved words ä¿ç•™å­—æœ€å¤§å€¼*/
 #define MAXRESERVED 8
 
 typedef enum {
   C_ENDFILE,
   C_ERROR,
-  /* reserved Keyword ±£Áô×Ö */
+  /* reserved Keyword ä¿ç•™å­— */
   C_ELSE,
   C_IF,
   C_INT,
@@ -49,21 +49,21 @@ typedef enum {
 
 } TokenType;
 
-extern FILE *source;  /* Ô´´úÂë */
-extern FILE *listing; /* Êä³öÎÄ¼ş */
+extern FILE *source;  /* æºä»£ç  */
+extern FILE *listing; /* è¾“å‡ºæ–‡ä»¶ */
 // extern FILE *code;    /* code text file for TM simulator */
 
-extern int lineno; /* ĞĞºÅ */
+extern int lineno; /* è¡Œå· */
 
 /**************************************************/
-/******************* ³éÏóÓï·¨Ê÷ *********************/
+/******************* æŠ½è±¡è¯­æ³•æ ‘ *********************/
 /**************************************************/
 
 typedef enum { StmtK, ExpK } NodeKind;
 typedef enum { IfK, RepeatK, AssignK, ReadK, WriteK } StmtKind;
 typedef enum { OpK, ConstK, IdK } ExpKind;
 
-/* ExpType ÓÃÓÚÀàĞÍ¼ì²â */
+/* ExpType ç”¨äºç±»å‹æ£€æµ‹ */
 typedef enum { Void, Integer, Boolean } ExpType;
 
 #define MAXCHILDREN 3
@@ -82,28 +82,28 @@ typedef struct treeNode {
     int val;
     char *name;
   } attr;
-  ExpType type; /* ÓÃÓÚÀàĞÍ¼ì²â */
+  ExpType type; /* ç”¨äºç±»å‹æ£€æµ‹ */
 } TreeNode;
 
 /**************************************************/
-/*****************   µ÷ÊÔ±êÖ¾    *******************/
+/*****************   è°ƒè¯•æ ‡å¿—    *******************/
 /**************************************************/
 
-// EchoSource = true ´òÓ¡Ô´´úÂë
+// EchoSource = true æ‰“å°æºä»£ç 
 extern int EchoSource;
 
-// TraceScan = true ´òÓ¡tokenĞÅÏ¢
+// TraceScan = true æ‰“å°tokenä¿¡æ¯
 extern int TraceScan;
 
-// TraceParse = true ´òÓ¡Óï·¨Ê÷
+// TraceParse = true æ‰“å°è¯­æ³•æ ‘
 extern int TraceParse;
 
-// TraceAnalyze = true ´òÓ¡¶Ô·ûºÅ±íµÄ²Ù×÷
+// TraceAnalyze = true æ‰“å°å¯¹ç¬¦å·è¡¨çš„æ“ä½œ
 extern int TraceAnalyze;
 
-// TraceCode = true ½«×¢ÊÍ´òÓ¡µ½Êä³öÎÄ¼ş
+// TraceCode = true å°†æ³¨é‡Šæ‰“å°åˆ°è¾“å‡ºæ–‡ä»¶
 extern int TraceCode;
 
-// Error = true ÔÚ·¢Éú´íÎóÊ±£¬·ÀÖ¹Í¨¹ı±àÒë
+// Error = true åœ¨å‘ç”Ÿé”™è¯¯æ—¶ï¼Œé˜²æ­¢é€šè¿‡ç¼–è¯‘
 extern int Error;
 #endif
