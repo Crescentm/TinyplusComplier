@@ -1,10 +1,10 @@
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 /* MAXRESERVED = the number of reserved words 保留字最大值*/
 #define MAXRESERVED 10

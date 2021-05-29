@@ -3,8 +3,7 @@
 #include "util.h"
 #include <cstdlib>
 #include <cstring>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
 
 void printToken(TokenType token, const char *tokenString) {
   switch (token) {
