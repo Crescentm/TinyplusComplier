@@ -15,7 +15,8 @@ typedef enum {
   S_OEXF,
   S_NEQ,
   S_DONE,
-  S_EQ
+  S_EQ,
+  S_UNCHAR,
 } StateType;
 
 /* lexeme of identifier or reserved word 标识符或保留字的词素 */
@@ -120,6 +121,11 @@ TokenType getToken(void) { /* index for storing into tokenString
         state = S_IEXF;
       else if (c == ':')
         state = S_INASSIGN;
+      else if (c == '"')
+      {
+        state = S_UNCHAR;
+        save = false;
+      }       
       else //单目标识符或首字符唯一的标识符
       {
         state = S_DONE;
@@ -257,6 +263,21 @@ TokenType getToken(void) { /* index for storing into tokenString
         state = S_INCOMMENT;
       break;
 
+    case S_UNCHAR:
+      if(c == '"')
+      {
+        save = false;
+        state = S_DONE;
+        currentToken = C_CHARS;
+      }else if(isalpha(c) ||isdigit(c))
+      {
+        state = S_UNCHAR;
+      }
+      else
+      {
+        save = false;
+        currentToken = C_ERROR;
+      }
     case S_DONE:
     default: /* should never happen */
       fprintf(listing, "Scanner Bug: state= %d\n", state);

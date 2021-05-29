@@ -26,6 +26,7 @@ typedef enum {
   /* multicharacter tokens */
   C_ID,
   C_NUM,
+  C_CHARS,
   /* special symbols */
   C_PLUS,   // +
   C_MINUS,  // -
