@@ -12,7 +12,6 @@ typedef enum {
   S_INLT,
   S_INHT,
   S_IEXF,
-  S_IEX,
   S_OEXF,
   S_NEQ,
   S_DONE,
@@ -150,7 +149,7 @@ TokenType getToken(void) { /* index for storing into tokenString
         case ';':
           currentToken = C_SEMI;
           break;
-        case ',':
+        case ',':///
           currentToken = C_COM;
           break;
         default:
@@ -205,11 +204,11 @@ TokenType getToken(void) { /* index for storing into tokenString
     case S_INASSIGN:
       state = S_DONE;
       if (c == '=')
-        currentToken = C_EQ;
+        currentToken = C_ASSIGN;
       else {             /* backup in the input 在输入中备份*/
+        currentToken = C_ERROR;
         ungetNextChar(); // tiny中数和标识符的识别要求从INNUM和INID到最终状态的转换都应该是非消耗的
-        save =
-            false; //可提供ungetNextChar过程，在输入缓冲区中回溯一个字符来完成任务
+        save = false; //可提供ungetNextChar过程，在输入缓冲区中回溯一个字符来完成任务
       }
 
     case S_INNUM:
@@ -234,7 +233,7 @@ TokenType getToken(void) { /* index for storing into tokenString
       state = S_DONE;
       currentToken = C_DIV;
       if (c == '*') {
-        state = S_IEX;
+        state = S_INCOMMENT;
         save = false;
       } else {
         ungetNextChar();
@@ -242,12 +241,12 @@ TokenType getToken(void) { /* index for storing into tokenString
       }
       break;
 
-    case S_IEX:
+    case S_INCOMMENT:
       save = false;
       if (c == '*') {
         state = S_OEXF;
       } else
-        state = S_IEX;
+        state = S_INCOMMENT;
       break;
 
     case S_OEXF:
@@ -255,7 +254,7 @@ TokenType getToken(void) { /* index for storing into tokenString
       if (c == '/') {
         state = S_START;
       } else
-        state = S_IEX;
+        state = S_INCOMMENT;
       break;
 
     case S_DONE:
