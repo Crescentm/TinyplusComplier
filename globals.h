@@ -1,13 +1,13 @@
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 /* MAXRESERVED = the number of reserved words 保留字最大值*/
-#define MAXRESERVED 8
+#define MAXRESERVED 10
 
 typedef enum {
   C_ENDFILE,
@@ -16,37 +16,33 @@ typedef enum {
   C_ELSE,
   C_IF,
   C_INT,
-  C_RETURN,
-  C_VOID,
-  C_WHILE,
+  C_REPEAT,
   C_WRITE,
   C_READ,
+  C_THEN,
+  C_END,
+  C_CHAR,
+  C_UNTIL,
   /* multicharacter tokens */
   C_ID,
   C_NUM,
   /* special symbols */
-  C_PLUS,    // +
-  C_MINUS,   // -
-  C_TIMES,   // *
-  C_DIV,     // /
-  C_ASSIGN,  // =
-  C_MOD,     // %
-  C_LT,      // <
-  C_GT,      // >
-  C_LPAREN,  // (
-  C_RPAREN,  // )
-  C_LBRACE,  // {
-  C_RBRACE,  // }
-  C_LSQUARE, // [
-  C_RSQUARE, // ]
-  C_COM,     // ,
-  C_SEMI,    // ;
-  C_EQ,      // ==
-  C_NEQ,     // !=
-  C_NGT,     // <=
-  C_NLT,     // >=
-  // k_EOF, k_ID, k_NUM, k_ERROR, k_NONE
-
+  C_PLUS,   // +
+  C_MINUS,  // -
+  C_TIMES,  // *
+  C_DIV,    // /
+  C_ASSIGN, // :=
+  C_MOD,    // %
+  C_LT,     // <
+  C_GT,     // >
+  C_LPAREN, // (
+  C_RPAREN, // )
+  C_COM,    // ,
+  C_SEMI,   // ;
+  C_EQ,     // ==
+  C_NEQ,    // !=
+  C_NGT,    // <=
+  C_NLT,    // >=
 } TokenType;
 
 extern FILE *source;  /* 源代码 */
@@ -59,23 +55,25 @@ extern int lineno; /* 行号 */
 /******************* 抽象语法树 *********************/
 /**************************************************/
 
-typedef enum { StmtK, ExpK } NodeKind;
+typedef enum { StmtK, ExpK, DeclarK } NodeKind;
 typedef enum { IfK, RepeatK, AssignK, ReadK, WriteK } StmtKind;
 typedef enum { OpK, ConstK, IdK } ExpKind;
+typedef enum { Int, Char } DeclarKind;
 
 /* ExpType 用于类型检测 */
-typedef enum { Void, Integer, Boolean } ExpType;
+typedef enum { Void, Integer, Boolean, Character } ExpType;
 
 #define MAXCHILDREN 3
 
 typedef struct treeNode {
-  struct treeNode *child[MAXCHILDREN];
-  struct treeNode *sibling;
+  struct treeNode *child[MAXCHILDREN]; //子节点
+  struct treeNode *sibling;            //兄弟节点
   int lineno;
-  NodeKind nodekind;
+  NodeKind nodekind; // 节点类型
   union {
     StmtKind stmt;
     ExpKind exp;
+    DeclarKind declar;
   } kind;
   union {
     TokenType op;

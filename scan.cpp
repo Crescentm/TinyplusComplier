@@ -15,7 +15,8 @@ typedef enum {
   S_IEX,
   S_OEXF,
   S_NEQ,
-  S_DONE
+  S_DONE,
+  S_EQ
 } StateType;
 
 /* lexeme of identifier or reserved word 标识符或保留字的词素 */
@@ -61,12 +62,11 @@ static void ungetNextChar(void) {
 static struct {
   char const *str;
   TokenType tok;
-} reservedWords[MAXRESERVED] = {
-    {"if", C_IF},     {"int", C_INT},       {"void", C_VOID},
-    {"else", C_ELSE}, {"return", C_RETURN}, {"while", C_WHILE},
-    {"read", C_READ}, {"write", C_WRITE},
-    /*{"random", C_RANDOM},*/
-};
+} reservedWords[MAXRESERVED] = {{"if", C_IF},       {"then", C_THEN},
+                                {"int", C_INT},     {"end", C_END},
+                                {"until", C_UNTIL}, {"char", C_CHAR},
+                                {"else", C_ELSE},   {"repeat", C_REPEAT},
+                                {"read", C_READ},   {"write", C_WRITE}};
 
 /* lookup an identifier to see if it is a reserved word
  * 检查标识符是否为保留字 uses linear search
@@ -107,7 +107,7 @@ TokenType getToken(void) { /* index for storing into tokenString
       else if (isalpha(c)) //如果为字母，返回非0
         state = S_INID;
       else if (c == '=')
-        state = S_INASSIGN;
+        state = S_EQ;
       else if ((c == ' ') || (c == '\t') || (c == '\n')) {
         save = false;
         state = S_START;
@@ -119,6 +119,8 @@ TokenType getToken(void) { /* index for storing into tokenString
         state = S_NEQ;
       else if (c == '/')
         state = S_IEXF;
+      else if (c == ':')
+        state = S_INASSIGN;
       else //单目标识符或首字符唯一的标识符
       {
         state = S_DONE;
@@ -144,18 +146,6 @@ TokenType getToken(void) { /* index for storing into tokenString
           break;
         case ')':
           currentToken = C_RPAREN;
-          break;
-        case '{':
-          currentToken = C_LBRACE;
-          break;
-        case '}':
-          currentToken = C_RBRACE;
-          break;
-        case '[':
-          currentToken = C_LSQUARE;
-          break;
-        case ']':
-          currentToken = C_RSQUARE;
           break;
         case ';':
           currentToken = C_SEMI;
@@ -198,7 +188,18 @@ TokenType getToken(void) { /* index for storing into tokenString
       else {
         currentToken = C_ERROR;
         ungetNextChar();
+        save = false;
       }
+      break;
+
+    case S_EQ:
+      if (c == '=')
+        currentToken = C_EQ;
+      else {
+        currentToken = C_ERROR;
+        ungetNextChar();
+        save = false;
+      };
       break;
 
     case S_INASSIGN:
@@ -234,7 +235,7 @@ TokenType getToken(void) { /* index for storing into tokenString
       currentToken = C_DIV;
       if (c == '*') {
         state = S_IEX;
-        save = false; ////
+        save = false;
       } else {
         ungetNextChar();
         save = false;
