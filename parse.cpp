@@ -60,7 +60,7 @@ static void match(TokenType expected) {
   }
 }
 /*
-program 			?	declaration-list  stmt-sequence
+program 			->	declaration-list  stmt-sequence
 */
 static TreeNode *program(void) {
   TreeNode *program = NULL, *last = NULL, *temp = NULL;
@@ -79,7 +79,7 @@ static TreeNode *program(void) {
 }
 
 /*
-declaration-list 	→ 	declaration-list declaration | declaration
+declaration-list 	-> 	declaration-list declaration | declaration
 */
 
 TreeNode *declaration_list(void) {
@@ -96,8 +96,8 @@ TreeNode *declaration_list(void) {
 }
 
 /*
-declaration 		→ 	type-specifier identifier;
-type-specifier 		→ 	int | char
+declaration 		-> 	type-specifier identifier;
+type-specifier 		-> 	int | char
 */
 
 TreeNode *declaration(void) {
@@ -117,13 +117,13 @@ TreeNode *declaration(void) {
 }
 
 /*
-stmt-sequence 	?	stmt-sequence statement | statement
+stmt-sequence 	->	stmt-sequence statement | statement
 */
 TreeNode *stmt_sequence(void) {
   TreeNode *t = statement();
   TreeNode *p = t;
   while ((Token != C_ENDFILE) && (Token != C_END) && (Token != C_ELSE) &&
-         (Token != C_UNTIL)) {
+          (Token != C_UNTIL)) {
     TreeNode *q;
     q = statement();
     if (q != NULL) {
@@ -139,7 +139,7 @@ TreeNode *stmt_sequence(void) {
   return t;
 }
 /*
-statement			?	if-stmt | repeat-stmt | assign-stmt |
+statement		->	if-stmt | repeat-stmt | assign-stmt |
 read-stmt | write-stmt
 */
 
@@ -170,7 +170,7 @@ TreeNode *statement(void) {
   return t;
 }
 /*
-if-stmt 			?  	if (exp) then stmt-sequence end
+if-stmt 			->  	if (exp) then stmt-sequence end
                 | if (exp) then stmt-sequence else stmt-sequence end
 */
 TreeNode *if_stmt(void) {
@@ -190,7 +190,7 @@ TreeNode *if_stmt(void) {
   return t;
 }
 /*
-repeat-stmt 		?	repeat stmt-sequence until exp
+repeat-stmt 		->	repeat stmt-sequence until exp
 */
 TreeNode *repeat_stmt(void) {
   TreeNode *t = newStmtNode(RepeatK);
@@ -203,86 +203,116 @@ TreeNode *repeat_stmt(void) {
   return t;
 }
 /*
-assign-stmt 		?	identifier := exp | achar;
+assign-stmt 		->	identifier := exp | achar;
 */
 TreeNode *assign_stmt(void) {
   TreeNode *t = newStmtNode(AssignK);
   if ((t != NULL) && (Token == C_ID)) {
     t->attr.name = copyString(tokenString);
     match(C_ID);
-  } //////////////////////////////////////////////////////////////改到这，明天中午再来
+  } 
 
   match(C_ASSIGN);
   if (t != NULL) {
-    if (Token == C_CHARS)
+      t->child[0] = exp();
   }
-  t->child[0] = exp();
+  match(C_SEMI);
   return t;
 }
 
-TreeNode *read_stmt(void) {
+/*
+read-stmt 		-> 	read identifier ;
+*/
+TreeNode *read_stmt(void) 
+{
   TreeNode *t = newStmtNode(ReadK);
   match(C_READ);
   if ((t != NULL) && (Token == C_ID))
     t->attr.name = copyString(tokenString);
   match(C_ID);
+  match(C_SEMI);
   return t;
 }
-
+/*
+write-stmt 		->	write exp;
+*/
 TreeNode *write_stmt(void) {
   TreeNode *t = newStmtNode(WriteK);
   match(C_WRITE);
   if (t != NULL)
     t->child[0] = exp();
+  match(C_SEMI);
   return t;
 }
+/*
+exp 				->	simple-exp comparson-op simple-exp | simple-exp | achar
+comparison-op 	-> 	< | <= | > |>= | != | == 
+*/
+TreeNode *exp(void) 
+{
+  if(Token == C_CHARS)
+  {
+    TreeNode *t=newExpNode(Charstringk);
+    t->attr.charstring = copyString(tokenString);
+    return t;
+  }
 
-TreeNode *exp(void) {
   TreeNode *t = simple_exp();
-  if ((Token == C_LT) || (Token == C_EQ)) {
+  if ((Token == C_LT) || (Token == C_EQ )||(Token == C_EQ) 
+        ||(Token == C_NEQ) ||(Token == C_NGT) ||(Token == C_NLT) ) {
     TreeNode *p = newExpNode(OpK);
     if (p != NULL) {
       p->child[0] = t;
-      p->attr.op = token;
+      p->attr.op = Token;
       t = p;
     }
-    match(token);
+    match(Token);
     if (t != NULL)
       t->child[1] = simple_exp();
   }
   return t;
 }
-
+/*
+simple-exp		->	simple-exp addop term | term
+addop			-> 	+ | -
+*/
 TreeNode *simple_exp(void) {
   TreeNode *t = term();
   while ((Token == C_PLUS) || (Token == C_MINUS)) {
     TreeNode *p = newExpNode(OpK);
     if (p != NULL) {
       p->child[0] = t;
-      p->attr.op = token;
+      p->attr.op = Token;
       t = p;
-      match(token);
+      match(Token);
       t->child[1] = term();
     }
   }
   return t;
 }
+/*
+term 			-> 	term mulop factor | factor
+mulop 			-> 	* | /
 
+*/
 TreeNode *term(void) {
   TreeNode *t = factor();
-  while ((Token == C_TIMES) || (Token == C_OVER)) {
+  while ((Token == C_TIMES) || (Token == C_DIV)) {
     TreeNode *p = newExpNode(OpK);
     if (p != NULL) {
       p->child[0] = t;
-      p->attr.op = token;
+      p->attr.op = Token;
       t = p;
-      match(token);
+      match(Token);
       p->child[1] = factor();
     }
   }
   return t;
 }
+/*
+factor 			?	 (exp) | number | identifier 
 
+*/
 TreeNode *factor(void) {
   TreeNode *t = NULL;
   switch (Token) {
