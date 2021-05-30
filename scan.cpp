@@ -12,10 +12,11 @@ typedef enum {
   S_INLT,
   S_INHT,
   S_IEXF,
-  S_IEX,
   S_OEXF,
   S_NEQ,
-  S_DONE
+  S_DONE,
+  S_EQ,
+  S_UNCHAR,
 } StateType;
 
 /* lexeme of identifier or reserved word 标识符或保留字的词素 */
@@ -61,12 +62,11 @@ static void ungetNextChar(void) {
 static struct {
   char const *str;
   TokenType tok;
-} reservedWords[MAXRESERVED] = {
-    {"if", C_IF},     {"int", C_INT},       {"void", C_VOID},
-    {"else", C_ELSE}, {"return", C_RETURN}, {"while", C_WHILE},
-    {"read", C_READ}, {"write", C_WRITE},
-    /*{"random", C_RANDOM},*/
-};
+} reservedWords[MAXRESERVED] = {{"if", C_IF},       {"then", C_THEN},
+                                {"int", C_INT},     {"end", C_END},
+                                {"until", C_UNTIL}, {"char", C_CHAR},
+                                {"else", C_ELSE},   {"repeat", C_REPEAT},
+                                {"read", C_READ},   {"write", C_WRITE}};
 
 /* lookup an identifier to see if it is a reserved word
  * 检查标识符是否为保留字 uses linear search
@@ -107,7 +107,7 @@ TokenType getToken(void) { /* index for storing into tokenString
       else if (isalpha(c)) //如果为字母，返回非0
         state = S_INID;
       else if (c == '=')
-        state = S_INASSIGN;
+        state = S_EQ;
       else if ((c == ' ') || (c == '\t') || (c == '\n')) {
         save = false;
         state = S_START;
@@ -119,6 +119,13 @@ TokenType getToken(void) { /* index for storing into tokenString
         state = S_NEQ;
       else if (c == '/')
         state = S_IEXF;
+      else if (c == ':')
+        state = S_INASSIGN;
+      else if (c == '"')
+      {
+        state = S_UNCHAR;
+        save = false;
+      }       
       else //单目标识符或首字符唯一的标识符
       {
         state = S_DONE;
@@ -145,22 +152,10 @@ TokenType getToken(void) { /* index for storing into tokenString
         case ')':
           currentToken = C_RPAREN;
           break;
-        case '{':
-          currentToken = C_LBRACE;
-          break;
-        case '}':
-          currentToken = C_RBRACE;
-          break;
-        case '[':
-          currentToken = C_LSQUARE;
-          break;
-        case ']':
-          currentToken = C_RSQUARE;
-          break;
         case ';':
           currentToken = C_SEMI;
           break;
-        case ',':
+        case ',':///
           currentToken = C_COM;
           break;
         default:
@@ -198,17 +193,28 @@ TokenType getToken(void) { /* index for storing into tokenString
       else {
         currentToken = C_ERROR;
         ungetNextChar();
+        save = false;
       }
+      break;
+
+    case S_EQ:
+      if (c == '=')
+        currentToken = C_EQ;
+      else {
+        currentToken = C_ERROR;
+        ungetNextChar();
+        save = false;
+      };
       break;
 
     case S_INASSIGN:
       state = S_DONE;
       if (c == '=')
-        currentToken = C_EQ;
+        currentToken = C_ASSIGN;
       else {             /* backup in the input 在输入中备份*/
+        currentToken = C_ERROR;
         ungetNextChar(); // tiny中数和标识符的识别要求从INNUM和INID到最终状态的转换都应该是非消耗的
-        save =
-            false; //可提供ungetNextChar过程，在输入缓冲区中回溯一个字符来完成任务
+        save = false; //可提供ungetNextChar过程，在输入缓冲区中回溯一个字符来完成任务
       }
 
     case S_INNUM:
@@ -233,20 +239,20 @@ TokenType getToken(void) { /* index for storing into tokenString
       state = S_DONE;
       currentToken = C_DIV;
       if (c == '*') {
-        state = S_IEX;
-        save = false; ////
+        state = S_INCOMMENT;
+        save = false;
       } else {
         ungetNextChar();
         save = false;
       }
       break;
 
-    case S_IEX:
+    case S_INCOMMENT:
       save = false;
       if (c == '*') {
         state = S_OEXF;
       } else
-        state = S_IEX;
+        state = S_INCOMMENT;
       break;
 
     case S_OEXF:
@@ -254,9 +260,24 @@ TokenType getToken(void) { /* index for storing into tokenString
       if (c == '/') {
         state = S_START;
       } else
-        state = S_IEX;
+        state = S_INCOMMENT;
       break;
 
+    case S_UNCHAR:
+      if(c == '"')
+      {
+        save = false;
+        state = S_DONE;
+        currentToken = C_CHARS;
+      }else if(isalpha(c) ||isdigit(c))
+      {
+        state = S_UNCHAR;
+      }
+      else
+      {
+        save = false;
+        currentToken = C_ERROR;
+      }
     case S_DONE:
     default: /* should never happen */
       fprintf(listing, "Scanner Bug: state= %d\n", state);

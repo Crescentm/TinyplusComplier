@@ -1,9 +1,7 @@
-#include "symtab.h"
-#include <bits/types/FILE.h>
 #include <cstdlib>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
+#include "symtab.h"
 
 // hash表的大小
 #define SIZE 211
