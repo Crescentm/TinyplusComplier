@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include "globals.h"
 #include "symtab.h"
 
 // hash表的大小
@@ -30,6 +31,7 @@ typedef struct LineListRec {
 typedef struct BucketListRec {
   char *name;
   LineList lines;
+  DeclarKind type;
   int memloc; // 变量内存地址
   struct BucketListRec *next;
 } * BucketList;
@@ -38,7 +40,7 @@ typedef struct BucketListRec {
 static BucketList hashTable[SIZE];
 
 // st_insert: 将变量的lineno和loc插入符号表的
-void st_insert(char *name, int lineno, int loc) {
+void st_insert(char *name, int lineno, int loc, DeclarKind kind) {
   int h = hash(name);
   BucketList l = hashTable[h];
 
@@ -51,6 +53,7 @@ void st_insert(char *name, int lineno, int loc) {
     l->lines = (LineList)malloc(sizeof(LineList));
     l->lines->lineno = lineno;
     l->memloc = loc;
+    l->type = kind;
     l->lines->next = NULL;
     l->next = hashTable[h];
     hashTable[h] = l; // 头插法
