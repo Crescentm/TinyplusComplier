@@ -121,12 +121,10 @@ TokenType getToken(void) { /* index for storing into tokenString
         state = S_IEXF;
       else if (c == ':')
         state = S_INASSIGN;
-      else if (c == '"')
-      {
+      else if (c == '"') {
         state = S_UNCHAR;
         save = false;
-      }       
-      else //单目标识符或首字符唯一的标识符
+      } else //单目标识符或首字符唯一的标识符
       {
         state = S_DONE;
         switch (c) {
@@ -155,7 +153,7 @@ TokenType getToken(void) { /* index for storing into tokenString
         case ';':
           currentToken = C_SEMI;
           break;
-        case ',':///
+        case ',': ///
           currentToken = C_COM;
           break;
         default:
@@ -211,10 +209,11 @@ TokenType getToken(void) { /* index for storing into tokenString
       state = S_DONE;
       if (c == '=')
         currentToken = C_ASSIGN;
-      else {             /* backup in the input 在输入中备份*/
+      else { /* backup in the input 在输入中备份*/
         currentToken = C_ERROR;
         ungetNextChar(); // tiny中数和标识符的识别要求从INNUM和INID到最终状态的转换都应该是非消耗的
-        save = false; //可提供ungetNextChar过程，在输入缓冲区中回溯一个字符来完成任务
+        save =
+            false; //可提供ungetNextChar过程，在输入缓冲区中回溯一个字符来完成任务
       }
 
     case S_INNUM:
@@ -264,17 +263,13 @@ TokenType getToken(void) { /* index for storing into tokenString
       break;
 
     case S_UNCHAR:
-      if(c == '"')
-      {
+      if (c == '"') {
         save = false;
         state = S_DONE;
         currentToken = C_CHARS;
-      }else if(isalpha(c) ||isdigit(c))
-      {
+      } else if (isalpha(c) || isdigit(c)) {
         state = S_UNCHAR;
-      }
-      else
-      {
+      } else {
         save = false;
         currentToken = C_ERROR;
       }

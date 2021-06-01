@@ -123,7 +123,7 @@ TreeNode *stmt_sequence(void) {
   TreeNode *t = statement();
   TreeNode *p = t;
   while ((Token != C_ENDFILE) && (Token != C_END) && (Token != C_ELSE) &&
-          (Token != C_UNTIL)) {
+         (Token != C_UNTIL)) {
     TreeNode *q;
     q = statement();
     if (q != NULL) {
@@ -210,11 +210,11 @@ TreeNode *assign_stmt(void) {
   if ((t != NULL) && (Token == C_ID)) {
     t->attr.name = copyString(tokenString);
     match(C_ID);
-  } 
+  }
 
   match(C_ASSIGN);
   if (t != NULL) {
-      t->child[0] = exp();
+    t->child[0] = exp();
   }
   match(C_SEMI);
   return t;
@@ -223,8 +223,7 @@ TreeNode *assign_stmt(void) {
 /*
 read-stmt 		-> 	read identifier ;
 */
-TreeNode *read_stmt(void) 
-{
+TreeNode *read_stmt(void) {
   TreeNode *t = newStmtNode(ReadK);
   match(C_READ);
   if ((t != NULL) && (Token == C_ID))
@@ -245,21 +244,19 @@ TreeNode *write_stmt(void) {
   return t;
 }
 /*
-exp 				->	simple-exp comparson-op simple-exp | simple-exp | achar
-comparison-op 	-> 	< | <= | > |>= | != | == 
+exp 				->	simple-exp comparson-op simple-exp |
+simple-exp | achar comparison-op 	-> 	< | <= | > |>= | != | ==
 */
-TreeNode *exp(void) 
-{
-  if(Token == C_CHARS)
-  {
-    TreeNode *t=newExpNode(Charstringk);
+TreeNode *exp(void) {
+  if (Token == C_CHARS) {
+    TreeNode *t = newExpNode(Charstringk);
     t->attr.charstring = copyString(tokenString);
     return t;
   }
 
   TreeNode *t = simple_exp();
-  if ((Token == C_LT) || (Token == C_EQ )||(Token == C_EQ) 
-        ||(Token == C_NEQ) ||(Token == C_NGT) ||(Token == C_NLT) ) {
+  if ((Token == C_LT) || (Token == C_EQ) || (Token == C_EQ) ||
+      (Token == C_NEQ) || (Token == C_NGT) || (Token == C_NLT)) {
     TreeNode *p = newExpNode(OpK);
     if (p != NULL) {
       p->child[0] = t;
@@ -310,7 +307,7 @@ TreeNode *term(void) {
   return t;
 }
 /*
-factor 			?	 (exp) | number | identifier 
+factor 			?	 (exp) | number | identifier
 
 */
 TreeNode *factor(void) {
