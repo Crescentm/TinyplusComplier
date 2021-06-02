@@ -33,6 +33,10 @@ typedef struct BucketListRec {
   LineList lines;
   DeclarKind type;
   int memloc; // 变量内存地址
+  union {
+    int val;
+    char *charstring;
+  } val_exe;
   struct BucketListRec *next;
 } * BucketList;
 
@@ -55,6 +59,12 @@ void st_insert(char *name, int lineno, int loc, DeclarKind kind) {
     l->memloc = loc;
     l->type = kind;
     l->lines->next = NULL;
+    if(kind ==Int)
+    {
+      l->val_exe.val=0;
+    }
+    else
+      l->val_exe.charstring=NULL;
     l->next = hashTable[h];
     hashTable[h] = l; // 头插法
   } else {
@@ -78,10 +88,28 @@ int st_lookup(char *name) {
   if (l == NULL) {
     return -1;
   } else {
-    return l->memloc;
+    return l->type;
   }
 }
 
+// st_assival: 变量赋值
+int st_assival(char *name, int ischar, int valnum, char *valchar) {
+  int h = hash(name);
+  BucketList l = hashTable[h];
+  while ((l != NULL) && (strcmp(name, l->name) != 0)) {
+    l = l->next;
+  }
+  if (l == NULL) {
+    return -1;
+  } else {
+    if(ischar==1)
+      strcpy(l->val_exe.charstring,valchar);
+    else
+      l->val_exe.val=valnum;
+
+    return l->memloc;
+  }
+}
 // printSymTab: 打印符号表
 void printSymTab(FILE *listing) {
   fprintf(listing, "Variable Name  Location   Line Numbers\n");
