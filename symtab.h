@@ -10,6 +10,9 @@ int st_lookup(char *name);
 // st_assival: 变量赋值
 int st_assival(char *name, int ischar, int valnum, char *valchar);
 
+//返回变量信息，int型返回数值，char型返回头指针
+int st_val(char *name);
+char* st_char(char *name);
 // 将符号表打印到文件
 void printSymTab(FILE *listing);
 

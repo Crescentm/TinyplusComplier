@@ -92,6 +92,33 @@ int st_lookup(char *name) {
   }
 }
 
+//返回变量信息，int型返回数值，char型返回头指针
+int st_val(char *name)
+{
+  int h = hash(name);
+  BucketList l = hashTable[h];
+  while ((l != NULL) && (strcmp(name, l->name) != 0)) {
+    l = l->next;
+  }
+  if (l == NULL) {
+    return -1;
+  } else {
+    return l->val_exe.val;
+  }
+}
+char* st_char(char *name)
+{
+  int h = hash(name);
+  BucketList l = hashTable[h];
+  while ((l != NULL) && (strcmp(name, l->name) != 0)) {
+    l = l->next;
+  }
+  if (l == NULL) {
+    return NULL;
+  } else {
+    return l->val_exe.charstring;
+  }
+}
 // st_assival: 变量赋值
 int st_assival(char *name, int ischar, int valnum, char *valchar) {
   int h = hash(name);
@@ -103,7 +130,7 @@ int st_assival(char *name, int ischar, int valnum, char *valchar) {
     return -1;
   } else {
     if(ischar==1)
-      strcpy(l->val_exe.charstring,valchar);
+      l->val_exe.charstring=valchar;
     else
       l->val_exe.val=valnum;
 

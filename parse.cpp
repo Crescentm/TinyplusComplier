@@ -255,7 +255,7 @@ TreeNode *exp(void) {
   }
 
   TreeNode *t = simple_exp();
-  if ((Token == C_LT) || (Token == C_EQ) || (Token == C_EQ) ||
+  if ((Token == C_LT) || (Token == C_GT) || (Token == C_EQ) ||
       (Token == C_NEQ) || (Token == C_NGT) || (Token == C_NLT)) {
     TreeNode *p = newExpNode(OpK);
     if (p != NULL) {

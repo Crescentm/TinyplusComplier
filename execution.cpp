@@ -22,9 +22,110 @@ tmpOffset 是 temp 的内存偏移量，每次存储一个 temp 时递减，再�
 */
 static int tmpOffset = 0;
 
+static char* genExpc(TreeNode *tree)
+{
+
+	int loc[3];
+	char *cloc=NULL;
+
+	loc[0]=st_lookup(tree->attr.name);
+	if(loc[0] == Char)
+		return st_char(tree->attr.name);
+	else//
+		return NULL;
+}
+
 static int genExpi(TreeNode *tree)
 {
-	
+	TreeNode *p1, *p2, *p3;
+	p1 = tree->child[0];
+	p2 = tree->child[1];
+	p3 = tree->child[2];
+	int loc[3];
+	char *cloc;
+
+	switch(tree->kind.exp)
+	{
+		case OpK:
+		{
+			switch(tree->attr.op)
+			{
+				case C_LT:
+					if(genExpi(p1)<genExpi(p2))
+						return 1;
+					else
+						return 0;
+					break;
+				case C_GT:
+					if(genExpi(p1)>genExpi(p2))
+						return 1;
+					else
+						return 0;
+					break;
+				case C_NEQ:
+					if(genExpi(p1)!=genExpi(p2))
+						return 1;
+					else
+						return 0;
+					break;
+				case C_EQ:
+					if(genExpi(p1)==genExpi(p2))
+						return 1;
+					else
+						return 0;
+					break;
+				case C_NLT:
+					if(genExpi(p1)>=genExpi(p2))
+						return 1;
+					else
+						return 0;
+					break;
+				case C_NGT:
+					if(genExpi(p1)<=genExpi(p2))
+						return 1;
+					else
+						return 0;
+					break;
+				case C_PLUS:
+					loc[0]=genExpi(p1);
+					loc[1]=genExpi(p2);
+					return loc[0]+loc[1];
+					break;
+				case C_MINUS:
+					loc[0]=genExpi(p1);
+					loc[1]=genExpi(p2);
+					return loc[0]-loc[1];
+					break;
+				case C_TIMES:
+					loc[0]=genExpi(p1);
+					loc[1]=genExpi(p2);
+					return loc[0]*loc[1];
+					break;
+				case C_DIV:
+					loc[0]=genExpi(p1);
+					loc[1]=genExpi(p2);
+					return loc[0]/loc[1];
+					break;
+				default:
+					break;
+			}
+			break;
+		}
+		case ConstK:
+			return tree->attr.val;
+			break;
+
+		case IdK:
+			loc[0]=st_lookup(tree->attr.name);
+			if(loc[0] == Int)
+				return st_val(tree->attr.name);
+			else//不可发生
+				return 0;
+			break;
+	default:
+		break;
+	}
+	return 0;//不可发生
 }
 
 static void genFtmt(TreeNode *tree)
@@ -41,10 +142,10 @@ static void genFtmt(TreeNode *tree)
 		p2 = tree->child[1];
 		p3 = tree->child[2];
 
-		if(p1->kind.exp == Charstringk)//字符型均返回1执行
+		if(p1->kind.exp == Charstringk && genExpc(p1)!=NULL)//字符型均返回1执行
 		{
 			genFtmt(p2);
-		}else{
+		}else{//非字符型
 			if(genExpi(p1))//返回非0执行p2，为0执行p3
 				genFtmt(p2);
 			else
@@ -60,7 +161,7 @@ static void genFtmt(TreeNode *tree)
 		{
 			genFtmt(p1);
 
-			if(p2->kind.exp == Charstringk)//字符型均返回1执行
+			if(p2->kind.exp == Charstringk && genExpc(p1)!=NULL)//字符型均返回1执行
 				loc=1;
 			else
 				loc=genExpi(p2);
@@ -75,7 +176,8 @@ static void genFtmt(TreeNode *tree)
 		else
 			st_assival(tree->attr.name,0,genExpi(p1),NULL);
 		break;
-		case ReadK:
+
+	case ReadK:
 		loc=st_lookup(tree->attr.name);
 		printf("%s:\n",loc);//提醒输入
 		if(loc == Int)
@@ -90,16 +192,16 @@ static void genFtmt(TreeNode *tree)
 		}
 		break;
 		
-		case WriteK:
-			p1 = tree->child[0];
-			cloc=genExpc(p1);
-			if(cloc!=NULL)
-				printf("%s\n",cloc);
-			else
-				printf("%d\n",genExpi(p1));
-			break;
-		default:
-			break;
+	case WriteK:
+		p1 = tree->child[0];
+		cloc=genExpc(p1);
+		if(cloc!=NULL)
+			printf("%s\n",cloc);
+		else
+			printf("%d\n",genExpi(p1));
+		break;
+	default:
+		break;
 	}
 }
 static void execution(TreeNode * tree)
