@@ -91,7 +91,7 @@ TreeNode *newStmtNode(StmtKind kind) {
   if (t == NULL) {
     fprintf(listing, "Out of memory error at line %d\n", lineno);
   } else {
-    for (int i = 0; i < MAXTOKENLEN; i++) {
+    for (int i = 0; i < MAXCHILDREN; i++) {
       t->child[i] = NULL;
     }
     t->sibling = NULL;
@@ -107,7 +107,7 @@ TreeNode *newExpNode(ExpKind kind) {
   if (t == NULL) {
     fprintf(listing, "Out of memory error at line %d\n", lineno);
   } else {
-    for (int i = 0; i < MAXTOKENLEN; i++) {
+    for (int i = 0; i < MAXCHILDREN; i++) {
       t->child[i] = NULL;
     }
     t->sibling = NULL;
@@ -124,7 +124,7 @@ TreeNode *newDeclarNode(DeclarKind kind) {
   if (t == NULL) {
     fprintf(listing, "Out of memory error at line %d\n", lineno);
   } else {
-    for (int i = 0; i < MAXTOKENLEN; i++) {
+    for (int i = 0; i < MAXCHILDREN; i++) {
       t->child[i] = NULL;
     }
     t->sibling = NULL;
@@ -141,7 +141,7 @@ char *copyString(char *s) {
   if (s == NULL)
     return NULL;
   n = strlen(s) + 1;
-  t = (char *)malloc(n);
+  t = (char *)malloc(sizeof(char) * n);
   if (t == NULL) {
     fprintf(listing, "Out of memory error at line %d\n", lineno);
   } else {

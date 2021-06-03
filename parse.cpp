@@ -10,6 +10,8 @@
 #include "scan.h"
 #include "parse.h"
 
+using namespace std;
+
 static TokenType Token, iToken,
     tToken; /* holds current token,idnameToken,typeToken */
 static char itokenString[MAXTOKENLEN + 1], ttokenString[MAXTOKENLEN + 1];
@@ -83,8 +85,10 @@ declaration-list 	-> 	declaration-list declaration | declaration
 */
 
 TreeNode *declaration_list(void) {
-  TreeNode *last = NULL, *temp = NULL;
+  TreeNode *last = NULL, *temp = NULL, *declar = NULL;
 
+  declar = last = declaration();
+  Token = getToken();
   while (Token == C_INT || Token == C_CHAR) {
     if ((temp = declaration()) != NULL) {
       last->sibling = temp;
@@ -92,7 +96,7 @@ TreeNode *declaration_list(void) {
     }
     Token = getToken();
   }
-  return temp;
+  return declar;
 }
 
 /*
@@ -109,8 +113,9 @@ TreeNode *declaration(void) {
     match(C_CHAR);
     t = newDeclarNode(Char);
   }
-  if ((t != NULL) && (Token == C_ID))
+  if ((t != NULL) && (Token == C_ID)) {
     t->attr.name = copyString(tokenString);
+  }
   match(C_ID);
   match(C_SEMI);
   return t;
@@ -122,9 +127,9 @@ stmt-sequence 	->	stmt-sequence statement | statement
 TreeNode *stmt_sequence(void) {
   TreeNode *t = statement();
   TreeNode *p = t;
+  TreeNode *q = NULL;
   while ((Token != C_ENDFILE) && (Token != C_END) && (Token != C_ELSE) &&
          (Token != C_UNTIL)) {
-    TreeNode *q;
     q = statement();
     if (q != NULL) {
       if (t == NULL)

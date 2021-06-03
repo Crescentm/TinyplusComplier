@@ -14,9 +14,9 @@ ifndef CC
 	ifeq ($(detected_OS),Windows)
 		CC=gcc
 	else ifeq ($(detected_OS),Darwin)
-		CC=clang
+		CC=clang++
 	else
-		CC=gcc
+		CC=clang++
 	endif
 endif
 
@@ -36,44 +36,37 @@ else
 	tm=tm.out
 endif
 
-CFLAGS = 
+CFLAGS = -g
 
-OBJS = main.o util.o scan.o parse.o symtab.o analyze.o code.o cgen.o
+OBJS = main.o util.o scan.o parse.o symtab.o analyze.o execution.o
 
 tiny: $(OBJS)
 	$(CC) $(CFLAGS) -o $(tiny) $(OBJS)
 	$(RM) *.o
 
-tm: tm.c
-	$(CC) $(CFLAGS) -o $(tiny) tm.c
-	$(RM) *.o
+main.o: main.cpp globals.h util.h scan.h parse.h analyze.h execution.h
+	$(CC) $(CFLAGS) -c main.cpp
 
-main.o: main.c globals.h util.h scan.h parse.h analyze.h cgen.h
-	$(CC) $(CFLAGS) -c main.c
+util.o: util.cpp util.h globals.h
+	$(CC) $(CFLAGS) -c util.cpp
 
-util.o: util.c util.h globals.h
-	$(CC) $(CFLAGS) -c util.c
+scan.o: scan.cpp scan.h util.h globals.h
+	$(CC) $(CFLAGS) -c scan.cpp
 
-scan.o: scan.c scan.h util.h globals.h
-	$(CC) $(CFLAGS) -c scan.c
+parse.o: parse.cpp parse.h scan.h globals.h util.h
+	$(CC) $(CFLAGS) -c parse.cpp
 
-parse.o: parse.c parse.h scan.h globals.h util.h
-	$(CC) $(CFLAGS) -c parse.c
+symtab.o: symtab.cpp symtab.h
+	$(CC) $(CFLAGS) -c symtab.cpp
 
-symtab.o: symtab.c symtab.h
-	$(CC) $(CFLAGS) -c symtab.c
+analyze.o: analyze.cpp globals.h symtab.h analyze.h
+	$(CC) $(CFLAGS) -c analyze.cpp
 
-analyze.o: analyze.c globals.h symtab.h analyze.h
-	$(CC) $(CFLAGS) -c analyze.c
-
-code.o: code.c code.h globals.h
-	$(CC) $(CFLAGS) -c code.c
-
-cgen.o: cgen.c globals.h symtab.h code.h cgen.h
-	$(CC) $(CFLAGS) -c cgen.c
+execution.o: execution.cpp globals.h symtab.h execution.h
+	$(CC) $(CFLAGS) -c execution.cpp
 
 clean:
-	$(RM) *.out *.exe
+	$(RM) *.out *.exe *.o
 
 all: tiny tm
 

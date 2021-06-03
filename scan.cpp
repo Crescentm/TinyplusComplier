@@ -53,10 +53,7 @@ static int getNextChar(void) {
 }
 
 // ungetNextChar backtracks one character 回溯一个字符
-static void ungetNextChar(void) {
-  if (!EOF_flag)
-    linepos--;
-}
+static void ungetNextChar(void) { linepos--; }
 
 /* lookup table of reserved words */
 static struct {
