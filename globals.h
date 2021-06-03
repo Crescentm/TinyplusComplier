@@ -1,3 +1,5 @@
+﻿#pragma warning(disable:4996)  
+
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
@@ -64,7 +66,7 @@ typedef enum { Int, Char, NONE } DeclarKind;
 /* ExpType 用于类型检�? */
 typedef enum { Void, Integer, Boolean, Character } ExpType;
 
-#define MAXCHILDREN 3
+#define MAXCHILDREN 10
 
 typedef struct treeNode {
   struct treeNode *child[MAXCHILDREN]; //子节�?

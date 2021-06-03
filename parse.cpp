@@ -1,4 +1,4 @@
-/****************************************************/
+﻿/****************************************************/
 /* File: parse.c                                    */
 /* The parser implementation for the TINY compiler  */
 /* Compiler Construction: Principles and Practice   */
@@ -9,6 +9,8 @@
 #include "util.h"
 #include "scan.h"
 #include "parse.h"
+
+using namespace std;
 
 static TokenType Token, iToken,
     tToken; /* holds current token,idnameToken,typeToken */
@@ -40,15 +42,7 @@ static void syntaxError(char const *message) {
   Error = true;
 }
 
-// for the error recovery ...
-static void consumeUntil(const TokenType Type) {
-  while (Token != Type && Token != C_ENDFILE)
-    Token = getToken();
-}
-static void consumeUntil(const TokenType type1, const TokenType type2) {
-  while (Token != type1 && Token != type2 && Token != C_ENDFILE)
-    Token = getToken();
-}
+
 
 static void match(TokenType expected) {
   if (Token == expected)
@@ -83,16 +77,18 @@ declaration-list 	-> 	declaration-list declaration | declaration
 */
 
 TreeNode *declaration_list(void) {
-  TreeNode *last = NULL, *temp = NULL;
+  TreeNode *last = NULL, *temp = NULL, *declar = NULL;
 
+  declar = last = declaration();
+  //Token = getToken();
   while (Token == C_INT || Token == C_CHAR) {
     if ((temp = declaration()) != NULL) {
       last->sibling = temp;
       last = temp;
     }
-    Token = getToken();
+    //Token = getToken();
   }
-  return temp;
+  return declar;
 }
 
 /*
@@ -109,8 +105,9 @@ TreeNode *declaration(void) {
     match(C_CHAR);
     t = newDeclarNode(Char);
   }
-  if ((t != NULL) && (Token == C_ID))
+  if ((t != NULL) && (Token == C_ID)) {
     t->attr.name = copyString(tokenString);
+  }
   match(C_ID);
   match(C_SEMI);
   return t;
@@ -122,9 +119,9 @@ stmt-sequence 	->	stmt-sequence statement | statement
 TreeNode *stmt_sequence(void) {
   TreeNode *t = statement();
   TreeNode *p = t;
+  TreeNode *q = NULL;
   while ((Token != C_ENDFILE) && (Token != C_END) && (Token != C_ELSE) &&
          (Token != C_UNTIL)) {
-    TreeNode *q;
     q = statement();
     if (q != NULL) {
       if (t == NULL)

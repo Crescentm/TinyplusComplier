@@ -1,4 +1,4 @@
-#ifndef _SYMTAB_H_
+﻿#ifndef _SYMTAB_H_
 #define _SYMTAB_H_
 
 // 第一次遇到变量时，将变量的lineno和loc插入符号表
