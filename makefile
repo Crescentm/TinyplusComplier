@@ -21,10 +21,6 @@ ifndef CC
 endif
 
 ifeq ($(detected_OS),Windows)
-	RM=del /q /f
-endif
-
-ifeq ($(detected_OS),Windows)
 	tiny=tiny.exe
 else
 	tiny=tiny.out

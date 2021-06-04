@@ -1,4 +1,3 @@
-﻿#pragma warning(disable:4996)
 #include "globals.h"
 #include "util.h"
 #include "parse.h"
@@ -34,7 +33,7 @@ int main(int argc, char *argv[]) {
   fprintf(listing, "\nTINY COMPILATION: %s\n", pgm);
 
   syntaxTree = parse();
-  if (!TraceParse) {
+  if (TraceParse) {
     fprintf(listing, "\nSyntax tree:\n");
     printTree(syntaxTree);
   }

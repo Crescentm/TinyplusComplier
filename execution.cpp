@@ -40,7 +40,6 @@ static int genExpi(TreeNode *tree) {
   p3 = tree->child[2];
   int loc[3];
 
-
   switch (tree->kind.exp) {
   case OpK: {
     switch (tree->attr.op) {

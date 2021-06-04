@@ -1,4 +1,4 @@
-﻿/****************************************************/
+/****************************************************/
 /* File: parse.c                                    */
 /* The parser implementation for the TINY compiler  */
 /* Compiler Construction: Principles and Practice   */
@@ -82,7 +82,6 @@ TreeNode *declaration_list(void) {
   TreeNode *last = NULL, *temp = NULL, *declar = NULL;
 
   declar = last = declaration();
-  //Token = getToken();
   while (Token == C_INT || Token == C_CHAR) {
     if ((temp = declaration()) != NULL) {
       last->sibling = temp;
