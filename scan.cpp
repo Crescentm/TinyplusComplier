@@ -29,7 +29,7 @@ char tokenString[MAXTOKENLEN + 1];
 static char lineBuf[BUFLEN]; /* holds the current line */
 static int linepos = 0;      /* current position in LineBuf */
 static int bufsize = 0;      /* current size of buffer string */
-static int EOF_flag = true;  /* corrects ungetNextChar behavior on EOF */
+static int EOF_flag = false; /* corrects ungetNextChar behavior on EOF */
 
 //该函数将一个256字符缓冲区内部的lineBuf中的字符取到扫描程序中
 //如果耗尽该缓冲区，且假设每一次都获取了一个新的源代码行（以及增加的lineno），那么就可以利用fgets从sourse更新缓冲区
@@ -53,7 +53,10 @@ static int getNextChar(void) {
 }
 
 // ungetNextChar backtracks one character 回溯一个字符
-static void ungetNextChar(void) { linepos--; }
+static void ungetNextChar(void) {
+  if (!EOF_flag)
+    linepos--;
+}
 
 /* lookup table of reserved words */
 static struct {
@@ -97,8 +100,7 @@ TokenType getToken(void) { /* index for storing into tokenString
   {
     int c = getNextChar(); //扫描程序的字符输入
     save = true;
-    switch (state) 
-    {
+    switch (state) {
     case S_START:
       if (isdigit(c)) //如果为阿拉伯数字，返回非0
         state = S_INNUM;
@@ -106,12 +108,10 @@ TokenType getToken(void) { /* index for storing into tokenString
         state = S_INID;
       else if (c == '=')
         state = S_EQ;
-      else if ((c == ' ') || (c == '\t') || (c == '\n')) 
-      {
+      else if ((c == ' ') || (c == '\t') || (c == '\n')) {
         save = false;
         state = S_START;
-      } 
-      else if (c == '<')
+      } else if (c == '<')
         state = S_INLT;
       else if (c == '>')
         state = S_INHT;
@@ -124,12 +124,10 @@ TokenType getToken(void) { /* index for storing into tokenString
       else if (c == '"') {
         state = S_UNCHAR;
         save = false;
-      } 
-      else //单目标识符或首字符唯一的标识符
+      } else //单目标识符或首字符唯一的标识符
       {
         state = S_DONE;
-        switch (c) 
-        {
+        switch (c) {
         case EOF:
           save = false;
           currentToken = C_ENDFILE;
@@ -163,7 +161,7 @@ TokenType getToken(void) { /* index for storing into tokenString
           break;
         }
       }
-    break;
+      break;
 
     case S_INLT: /* < or <= */
       state = S_DONE;

@@ -42,8 +42,6 @@ static void syntaxError(char const *message) {
   Error = true;
 }
 
-
-
 static void match(TokenType expected) {
   if (Token == expected)
     Token = getToken();
@@ -67,7 +65,7 @@ static TreeNode *program(void) {
       last = program = temp;
       temp = stmt_sequence();
       for (; last->sibling != NULL;)
-          last = last->sibling;
+        last = last->sibling;
       last->sibling = temp;
     }
   }
@@ -87,7 +85,6 @@ TreeNode *declaration_list(void) {
       last->sibling = temp;
       last = temp;
     }
-    //Token = getToken();
   }
   return declar;
 }
