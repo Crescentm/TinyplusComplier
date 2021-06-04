@@ -64,9 +64,11 @@ static TreeNode *program(void) {
     printToken(Token, tokenString);
   } else {
     if ((temp = declaration_list()) != NULL) {
-      program = temp;
+      last = program = temp;
       temp = stmt_sequence();
-      program->sibling = temp;
+      for (; last->sibling != NULL;)
+          last = last->sibling;
+      last->sibling = temp;
     }
   }
   return program;

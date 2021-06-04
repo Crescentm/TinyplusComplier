@@ -13,7 +13,7 @@ FILE *listing;
 int EchoSource = false;
 int TraceScan = false;
 int TraceParse = false;
-int TraceAnalyze = false;
+int TraceAnalyze = true;
 int TraceCode = false;
 int Error = false;
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   fprintf(listing, "\nTINY COMPILATION: %s\n", pgm);
 
   syntaxTree = parse();
-  if (TraceParse) {
+  if (!TraceParse) {
     fprintf(listing, "\nSyntax tree:\n");
     printTree(syntaxTree);
   }
