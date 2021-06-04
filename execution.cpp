@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +39,6 @@ static int genExpi(TreeNode *tree) {
   p2 = tree->child[1];
   p3 = tree->child[2];
   int loc[3];
-  char *cloc;
 
   switch (tree->kind.exp) {
   case OpK: {
@@ -126,7 +125,8 @@ static void genFtmt(TreeNode *tree) {
   TreeNode *p1, *p2, *p3;
   int savedLoc1, savedLoc2, currentLoc;
   int loc;
-  char *cloc;
+  char cloc_m[256];
+  char* cloc = cloc_m;
 
   switch (tree->kind.stmt) {
   case IfK:
@@ -176,7 +176,7 @@ static void genFtmt(TreeNode *tree) {
       st_assival(tree->attr.name, 0, loc, NULL);
     } else {
       scanf("%s", cloc);
-      st_assival(tree->attr.name, 1, 0, NULL);
+      st_assival(tree->attr.name, 1, 0, cloc);
     }
     break;
 

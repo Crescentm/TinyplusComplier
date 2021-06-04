@@ -1,8 +1,9 @@
-#include <cstdlib>
+﻿#include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include "globals.h"
 #include "symtab.h"
+#include "util.h"
 
 // hash表的大小
 #define SIZE 211
@@ -129,8 +130,9 @@ int st_assival(char *name, int ischar, int valnum, char *valchar) {
   if (l == NULL) {
     return -1;
   } else {
-    if(ischar==1)
-      l->val_exe.charstring=valchar;
+      if (ischar == 1)
+
+          l->val_exe.charstring = copyString(valchar);
     else
       l->val_exe.val=valnum;
 

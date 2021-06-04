@@ -1,7 +1,7 @@
-#include "globals.h"
+﻿#include "globals.h"
 #include "symtab.h"
 #include "analyze.h"
-#include <bits/types/locale_t.h>
+//#include <bits/types/locale_t.h>
 #include <cstdio>
 #include <cstring>
 

@@ -1,4 +1,4 @@
-#include "globals.h"
+﻿#include "globals.h"
 #include "scan.h"
 #include "util.h"
 
@@ -97,7 +97,8 @@ TokenType getToken(void) { /* index for storing into tokenString
   {
     int c = getNextChar(); //扫描程序的字符输入
     save = true;
-    switch (state) {
+    switch (state) 
+    {
     case S_START:
       if (isdigit(c)) //如果为阿拉伯数字，返回非0
         state = S_INNUM;
@@ -105,10 +106,12 @@ TokenType getToken(void) { /* index for storing into tokenString
         state = S_INID;
       else if (c == '=')
         state = S_EQ;
-      else if ((c == ' ') || (c == '\t') || (c == '\n')) {
+      else if ((c == ' ') || (c == '\t') || (c == '\n')) 
+      {
         save = false;
         state = S_START;
-      } else if (c == '<')
+      } 
+      else if (c == '<')
         state = S_INLT;
       else if (c == '>')
         state = S_INHT;
@@ -121,10 +124,12 @@ TokenType getToken(void) { /* index for storing into tokenString
       else if (c == '"') {
         state = S_UNCHAR;
         save = false;
-      } else //单目标识符或首字符唯一的标识符
+      } 
+      else //单目标识符或首字符唯一的标识符
       {
         state = S_DONE;
-        switch (c) {
+        switch (c) 
+        {
         case EOF:
           save = false;
           currentToken = C_ENDFILE;
@@ -158,7 +163,7 @@ TokenType getToken(void) { /* index for storing into tokenString
           break;
         }
       }
-      break;
+    break;
 
     case S_INLT: /* < or <= */
       state = S_DONE;
@@ -193,6 +198,7 @@ TokenType getToken(void) { /* index for storing into tokenString
       break;
 
     case S_EQ:
+      state = S_DONE;
       if (c == '=')
         currentToken = C_EQ;
       else {
@@ -212,6 +218,7 @@ TokenType getToken(void) { /* index for storing into tokenString
         save =
             false; //可提供ungetNextChar过程，在输入缓冲区中回溯一个字符来完成任务
       }
+      break;
 
     case S_INNUM:
       if (!isdigit(c)) { /* backup in the input */

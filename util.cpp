@@ -1,4 +1,4 @@
-#include "globals.h"
+﻿#include "globals.h"
 #include "scan.h"
 #include "util.h"
 #include <cstdlib>

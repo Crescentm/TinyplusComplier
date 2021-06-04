@@ -42,15 +42,7 @@ static void syntaxError(char const *message) {
   Error = true;
 }
 
-// for the error recovery ...
-static void consumeUntil(const TokenType Type) {
-  while (Token != Type && Token != C_ENDFILE)
-    Token = getToken();
-}
-static void consumeUntil(const TokenType type1, const TokenType type2) {
-  while (Token != type1 && Token != type2 && Token != C_ENDFILE)
-    Token = getToken();
-}
+
 
 static void match(TokenType expected) {
   if (Token == expected)
@@ -72,9 +64,11 @@ static TreeNode *program(void) {
     printToken(Token, tokenString);
   } else {
     if ((temp = declaration_list()) != NULL) {
-      program = temp;
+      last = program = temp;
       temp = stmt_sequence();
-      program->sibling = temp;
+      for (; last->sibling != NULL;)
+          last = last->sibling;
+      last->sibling = temp;
     }
   }
   return program;
@@ -88,13 +82,12 @@ TreeNode *declaration_list(void) {
   TreeNode *last = NULL, *temp = NULL, *declar = NULL;
 
   declar = last = declaration();
-  Token = getToken();
   while (Token == C_INT || Token == C_CHAR) {
     if ((temp = declaration()) != NULL) {
       last->sibling = temp;
       last = temp;
     }
-    Token = getToken();
+    //Token = getToken();
   }
   return declar;
 }

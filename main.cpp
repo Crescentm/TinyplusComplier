@@ -12,7 +12,7 @@ FILE *listing;
 int EchoSource = false;
 int TraceScan = false;
 int TraceParse = false;
-int TraceAnalyze = false;
+int TraceAnalyze = true;
 int TraceCode = false;
 int Error = false;
 

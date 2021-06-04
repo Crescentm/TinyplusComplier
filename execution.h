@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _EXECUTION_H_
 #define _EXECUTION_H_
 #define _CRT_SECURE_NO_WARNINGS
