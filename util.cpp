@@ -187,6 +187,7 @@ void printTree(TreeNode *tree) {
         break;
       default:
         fprintf(listing, "Unknown ExpNode kind\n");
+        break;
       }
     } else if (tree->nodekind == ExpK) {
       switch (tree->kind.exp) {
@@ -200,8 +201,12 @@ void printTree(TreeNode *tree) {
       case IdK:
         fprintf(listing, "Id: %s\n", tree->attr.name);
         break;
+      case Charstringk:
+        fprintf(listing, "Charater string: %s\n", tree->attr.charstring);
+        break;
       default:
         fprintf(listing, "Unknown ExpNode kind\n");
+        break;
       }
     } else if (tree->nodekind == DeclarK) {
       switch (tree->kind.declar) {
@@ -210,8 +215,10 @@ void printTree(TreeNode *tree) {
         break;
       case Char:
         fprintf(listing, "Declare a character variable: %s\n", tree->attr.name);
+        break;
       default:
         fprintf(listing, "Unknown DeclarNode kind\n");
+        break;
       }
     } else {
       fprintf(listing, "Unknown node kind\n");

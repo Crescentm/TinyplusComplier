@@ -41,7 +41,6 @@
 *.su
 *.idb
 *.pdb
-*.TNY
 
 # Kernel Module Compile Results
 *.mod*

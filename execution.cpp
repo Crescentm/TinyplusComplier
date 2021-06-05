@@ -22,8 +22,8 @@ tmpOffset 是 temp 的内存偏移量，每次存储一个 temp 时递减，再�
 static int tmpOffset = 0;
 
 static char *genExpc(TreeNode *tree) {
-if (tree == NULL)
-      return NULL;
+  if (tree == NULL)
+    return NULL;
 
   int loc[3];
   char *cloc = NULL;
@@ -37,7 +37,7 @@ if (tree == NULL)
 
 static int genExpi(TreeNode *tree) {
   if (tree == NULL)
-      return 0;//不可发生
+    return 0; //不可发生
   TreeNode *p1, *p2, *p3;
   p1 = tree->child[0];
   p2 = tree->child[1];
@@ -127,7 +127,7 @@ static int genExpi(TreeNode *tree) {
 
 static void genFtmt(TreeNode *tree) {
   if (tree == NULL)
-      return;
+    return;
   TreeNode *p1, *p2, *p3;
   int savedLoc1, savedLoc2, currentLoc;
   int loc;
@@ -145,9 +145,9 @@ static void genFtmt(TreeNode *tree) {
       execution(p2);
     } else {           //非字符型
       if (genExpi(p1)) //返回非0执行p2，为0执行p3
-          execution(p2);
+        execution(p2);
       else
-          execution(p3);
+        execution(p3);
     }
     break;
 
@@ -156,7 +156,7 @@ static void genFtmt(TreeNode *tree) {
     p2 = tree->child[1];
 
     do {
-        execution(p1);
+      execution(p1);
 
       if (p2->kind.exp == Charstringk &&
           genExpc(p1) != NULL) //字符型均返回1执行
@@ -189,12 +189,11 @@ static void genFtmt(TreeNode *tree) {
   case WriteK:
     p1 = tree->child[0];
     cloc = NULL;
-    if (p1->nodekind==ExpK)
-    {
-        cloc = genExpc(p1);
-        printf("%s:\n", p1->attr.name); //显示输出
+    if (p1->nodekind == ExpK) {
+      cloc = genExpc(p1);
+      printf("%s:", p1->attr.name); //显示输出
     }
-    
+
     if (cloc != NULL)
       printf("%s\n", cloc);
     else
@@ -206,8 +205,8 @@ static void genFtmt(TreeNode *tree) {
 }
 
 void execution(TreeNode *tree) {
-    TreeNode* temp;
-    temp = tree;
+  TreeNode *temp;
+  temp = tree;
   while (temp != NULL) {
     if (temp->nodekind == StmtK)
       genFtmt(temp);
