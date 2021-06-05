@@ -69,6 +69,7 @@ static void insertNode(TreeNode *t) {
     default:
       break;
     }
+    break;
   case ExpK:
     switch (t->kind.exp) {
     case IdK:
@@ -83,6 +84,7 @@ static void insertNode(TreeNode *t) {
     default:
       break;
     }
+    break;
   default:
     break;
   }
