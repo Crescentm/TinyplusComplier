@@ -129,7 +129,7 @@ static void checkNode(TreeNode *t) {
       if ((t->attr.op == C_PLUS) || (t->attr.op == C_MINUS) ||
           (t->attr.op == C_TIMES) || (t->attr.op == C_DIV) ||
           (t->attr.op == C_MOD)) {
-        t->type = Exp;
+        t->type = Integer;
       }
       break;
     case ConstK:
@@ -153,8 +153,7 @@ static void checkNode(TreeNode *t) {
       }
       break;
     case AssignK:
-      if ((t->child[0]->type != Integer) && (t->child[0]->type != Character) &&
-          (t->child[0]->type != Exp))
+      if ((t->child[0]->type != Integer) && (t->child[0]->type != Character))
         typeError(t->child[0],
                   "assignment of non-integer or non-character value");
       break;

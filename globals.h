@@ -1,4 +1,4 @@
-﻿//#pragma warning(disable:4996)  
+﻿//#pragma warning(disable:4996)
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
@@ -63,7 +63,7 @@ typedef enum { OpK, ConstK, IdK, Charstringk } ExpKind;
 typedef enum { Int, Char, NONE } DeclarKind;
 
 /* ExpType 用于类型检�? */
-typedef enum { Void, Integer, Boolean, Character, Exp } ExpType;
+typedef enum { Void, Integer, Boolean, Character } ExpType;
 
 #define MAXCHILDREN 10
 
