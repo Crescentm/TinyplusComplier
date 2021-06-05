@@ -2,7 +2,7 @@ int x;
 int fact;
 int m;
 read x;
-if 0 == x then
+if x == 0 then
   fact := 1;
   repeat
     fact := fact * x;

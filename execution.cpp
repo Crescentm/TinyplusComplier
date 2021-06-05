@@ -126,7 +126,7 @@ static void genFtmt(TreeNode *tree) {
   int savedLoc1, savedLoc2, currentLoc;
   int loc;
   char cloc_m[256];
-  char* cloc = cloc_m;
+  char *cloc = cloc_m;
 
   switch (tree->kind.stmt) {
   case IfK:

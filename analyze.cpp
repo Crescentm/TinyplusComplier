@@ -1,12 +1,10 @@
-﻿#include "globals.h"
+#include "globals.h"
 #include "symtab.h"
 #include "analyze.h"
-//#include <bits/types/locale_t.h>
 #include <cstdio>
 #include <cstring>
 
 static int location = 0;
-static TreeNode *declared_var = NULL;
 
 // // 判断是否已经定义
 // static bool is_declare(TreeNode *t) {
@@ -22,19 +20,13 @@ static TreeNode *declared_var = NULL;
 
 // 返回已定义变量的exp类型方便类型检查
 static ExpType typeofvar(TreeNode *t) {
-  TreeNode *tmp = declared_var;
-  while (tmp != NULL) {
-    if (strcmp(t->attr.name, tmp->attr.name) == 0) {
-      if (tmp->kind.declar == Int)
-        return Integer;
-      else if (tmp->kind.declar == Char)
-        return Character;
-      else
-        continue;
-    }
-    tmp = tmp->sibling;
+  if (st_type(t->attr.name) == Int) {
+    return Integer;
+  } else if (st_type(t->attr.name) == Char) {
+    return Character;
+  } else {
+    return Void;
   }
-  return Void;
 }
 
 // 遍历语法树
@@ -45,7 +37,7 @@ static void traverse(TreeNode *t, void (*preProc)(TreeNode *),
     {
       int i;
       for (i = 0; i < MAXCHILDREN; i++) {
-        traverse(t->sibling, preProc, postProc);
+        traverse(t->child[i], preProc, postProc);
       }
       postProc(t);
       traverse(t->sibling, preProc, postProc);
@@ -61,17 +53,6 @@ static void nullProc(TreeNode *t) {
 }
 
 static void insertNode(TreeNode *t) {
-  TreeNode *var = declared_var;
-  while (var != NULL) {
-    if (st_lookup(var->attr.name) != -1) {
-      fprintf(listing, "multi declare of variable at line %d: %s\n", t->lineno,
-              t->attr.name);
-      Error = true;
-    } else {
-      st_insert(t->attr.name, t->lineno, location++, t->kind.declar);
-    }
-  }
-
   switch (t->nodekind) {
   case StmtK:
     switch (t->kind.stmt) {
@@ -108,8 +89,18 @@ static void insertNode(TreeNode *t) {
 }
 
 void buildSymtab(TreeNode *syntaxTree) {
-  declared_var = syntaxTree->child[0];
-  traverse(syntaxTree->sibling, insertNode, nullProc);
+  TreeNode *var = syntaxTree;
+  while (var->nodekind == DeclarK && var != NULL) {
+    if (st_lookup(var->attr.name) != -1) {
+      fprintf(listing, "multi declare of variable at line %d: %s\n",
+              var->lineno, var->attr.name);
+      Error = true;
+    } else {
+      st_insert(var->attr.name, var->lineno, location++, var->kind.declar);
+    }
+    var = var->sibling;
+  }
+  traverse(var, insertNode, nullProc);
   if (TraceAnalyze) {
     fprintf(listing, "\nSymbol table:\n\n");
     printSymTab(listing);
@@ -127,7 +118,7 @@ static void checkNode(TreeNode *t) {
   case ExpK:
     switch (t->kind.exp) {
     case OpK:
-      if ((t->child[0]->type != Integer) || (t->child[1]->type != Integer)) {
+      if ((t->child[0]->type != Integer) && (t->child[1]->type != Integer)) {
         typeError(t, "Op applied to non-integer");
       }
       if ((t->attr.op == C_EQ) || (t->attr.op == C_NEQ) ||
@@ -135,16 +126,25 @@ static void checkNode(TreeNode *t) {
           (t->attr.op == C_NGT) || (t->attr.op == C_NLT)) {
         t->type = Boolean;
       }
+      if ((t->attr.op == C_PLUS) || (t->attr.op == C_MINUS) ||
+          (t->attr.op == C_TIMES) || (t->attr.op == C_DIV) ||
+          (t->attr.op == C_MOD)) {
+        t->type = Exp;
+      }
       break;
     case ConstK:
       t->type = Integer;
+      break;
     case IdK:
       t->type = typeofvar(t);
+      break;
     case Charstringk:
       t->type = Character;
+      break;
     default:
       break;
     }
+    break;
   case StmtK:
     switch (t->kind.stmt) {
     case IfK:
@@ -153,21 +153,23 @@ static void checkNode(TreeNode *t) {
       }
       break;
     case AssignK:
-      if ((t->child[0]->type != Integer) || (t->child[0]->type != Character))
+      if ((t->child[0]->type != Integer) && (t->child[0]->type != Character) &&
+          (t->child[0]->type != Exp))
         typeError(t->child[0],
                   "assignment of non-integer or non-character value");
       break;
     case WriteK:
-      if ((t->child[0]->type != Integer) || (t->child[0]->type != Character))
+      if ((t->child[0]->type != Integer) && (t->child[0]->type != Character))
         typeError(t->child[0], "write of non-integer or non-character value");
       break;
     case RepeatK:
-      if (t->child[1]->type == Integer)
+      if (t->child[1]->type != Boolean)
         typeError(t->child[1], "repeat test is not Boolean");
       break;
     default:
       break;
     }
+    break;
   default:
     break;
   }

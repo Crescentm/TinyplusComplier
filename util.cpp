@@ -131,6 +131,7 @@ TreeNode *newDeclarNode(DeclarKind kind) {
     t->nodekind = DeclarK;
     t->kind.declar = kind;
     t->lineno = lineno;
+    t->type = Void;
   }
   return t;
 }
@@ -173,7 +174,7 @@ void printTree(TreeNode *tree) {
         fprintf(listing, "If\n");
         break;
       case RepeatK:
-        fprintf(listing, "Repear\n");
+        fprintf(listing, "Repeat\n");
         break;
       case AssignK:
         fprintf(listing, "Assign to: %s\n", tree->attr.name);
