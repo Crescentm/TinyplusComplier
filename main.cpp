@@ -19,11 +19,11 @@ int Error = false;
 int main(int argc, char *argv[]) {
   TreeNode *syntaxTree;
   char pgm[120]; /* source code file name */
-  // if (argc != 2) {
-  //   fprintf(stderr, "usage: %s <filename>\n", argv[0]);
-  //   exit(1);
-  // }
-  strcpy(pgm, "SAMPLE.TNY");
+  if (argc != 2) {
+    fprintf(stderr, "usage: %s <filename>\n", argv[0]);
+    exit(1);
+  }
+  strcpy(pgm, argv[1]);
   source = fopen(pgm, "r");
   if (source == NULL) {
     fprintf(stderr, "File %s not found\n", pgm);
