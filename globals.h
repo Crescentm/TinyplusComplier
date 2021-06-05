@@ -1,4 +1,5 @@
-﻿#ifndef _GLOBALS_H_
+﻿//#pragma warning(disable:4996)  
+#ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
 #include <cctype>

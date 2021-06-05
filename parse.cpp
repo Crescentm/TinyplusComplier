@@ -49,6 +49,7 @@ static void match(TokenType expected) {
     syntaxError("unexpected token -> ");
     printToken(Token, tokenString);
     fprintf(listing, "      ");
+    Token = getToken();
   }
 }
 /*
