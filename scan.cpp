@@ -186,6 +186,7 @@ TokenType getToken(void) { /* index for storing into tokenString
       break;
 
     case S_NEQ:
+      state = S_DONE;
       if (c == '=')
         currentToken = C_NEQ;
       else {
@@ -252,15 +253,29 @@ TokenType getToken(void) { /* index for storing into tokenString
       save = false;
       if (c == '*') {
         state = S_OEXF;
-      } else
-        state = S_INCOMMENT;
+      }
+      else if (c == EOF)
+      {
+          save = false;
+          state = S_DONE;
+          currentToken = C_ENDFILE;
+      }
+      else
+          state = S_INCOMMENT;
       break;
 
     case S_OEXF:
       save = false;
       if (c == '/') {
+        tokenStringIndex--;
         state = S_START;
-      } else
+      }
+      else if (c == EOF)
+      {
+        save = false;
+        state = S_DONE;
+        currentToken = C_ENDFILE;
+      }else
         state = S_INCOMMENT;
       break;
 
@@ -275,6 +290,8 @@ TokenType getToken(void) { /* index for storing into tokenString
         save = false;
         currentToken = C_ERROR;
       }
+      break;
+
     case S_DONE:
     default: /* should never happen */
       fprintf(listing, "Scanner Bug: state= %d\n", state);

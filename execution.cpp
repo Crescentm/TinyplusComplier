@@ -163,7 +163,7 @@ static void genFtmt(TreeNode *tree) {
         loc = 1;
       else
         loc = genExpi(p2);
-    } while (loc);
+    } while (!loc);
     break;
 
   case AssignK:
@@ -188,8 +188,13 @@ static void genFtmt(TreeNode *tree) {
 
   case WriteK:
     p1 = tree->child[0];
-    cloc = genExpc(p1);
-    printf("%s:\n", p1->attr.name); //显示输出
+    cloc = NULL;
+    if (p1->nodekind == DeclarK)
+    {
+        cloc = genExpc(p1);
+        printf("%s:\n", p1->attr.name); //显示输出
+    }
+    
     if (cloc != NULL)
       printf("%s\n", cloc);
     else

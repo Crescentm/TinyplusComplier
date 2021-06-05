@@ -247,6 +247,7 @@ TreeNode *exp(void) {
   if (Token == C_CHARS) {
     TreeNode *t = newExpNode(Charstringk);
     t->attr.charstring = copyString(tokenString);
+    match(Token);
     return t;
   }
 
@@ -270,7 +271,16 @@ simple-exp		->	simple-exp addop term | term
 addop			-> 	+ | -
 */
 TreeNode *simple_exp(void) {
-  TreeNode *t = term();
+    TreeNode* t;
+    if ((Token == C_PLUS) || (Token == C_MINUS))
+    {
+        t = newExpNode(ConstK);
+        if ((t != NULL))
+            t->attr.val = 0;
+    }
+    else
+        t = term();
+
   while ((Token == C_PLUS) || (Token == C_MINUS)) {
     TreeNode *p = newExpNode(OpK);
     if (p != NULL) {
